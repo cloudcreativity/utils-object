@@ -20,6 +20,7 @@ namespace CloudCreativity\Utils\Object;
 
 use InvalidArgumentException;
 use stdClass;
+use Traversable;
 
 /**
  * Class ObjectUtils
@@ -93,6 +94,17 @@ class Obj
         }
 
         return $copy;
+    }
+
+    /**
+     * @param object|array $data
+     * @return Traversable
+     */
+    public static function traverse($data)
+    {
+        foreach ($data as $key => $value) {
+            yield $key => is_object($value) ? static::cast($value) : $value;
+        }
     }
 
     /**

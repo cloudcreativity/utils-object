@@ -18,7 +18,6 @@
 
 namespace CloudCreativity\Utils\Object;
 
-use ArrayIterator;
 use IteratorAggregate;
 use OutOfBoundsException;
 use stdClass;
@@ -102,11 +101,7 @@ class StandardObject implements IteratorAggregate, StandardObjectInterface
      */
     public function getIterator()
     {
-        if ($this->proxy instanceof Traversable) {
-            return clone $this->proxy;
-        }
-
-        return new ArrayIterator((array) $this->proxy);
+        return Obj::traverse($this->proxy);
     }
 
     /**

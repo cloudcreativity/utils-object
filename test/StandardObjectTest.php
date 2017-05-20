@@ -112,7 +112,8 @@ class StandardObjectTest extends TestCase
     public function testIterator()
     {
         $expected = (array) $this->proxy;
-        $this->assertSame($expected, iterator_to_array($this->object));
+        $expected['attributes'] = new StandardObject($expected['attributes']);
+        $this->assertEquals($expected, iterator_to_array($this->object));
     }
 
     public function testCount()
