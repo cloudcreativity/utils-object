@@ -1,0 +1,45 @@
+{
+    "name": "cloudcreativity/utils-object",
+    "description": "Utility class for handling standard objects.",
+    "keywords": [
+        "cloudcreativity",
+        "object"
+    ],
+    "homepage": "https://github.com/cloudcreativity/utils-object",
+    "support": {
+        "issues": "https://github.com/cloudcreativity/utils-object/issues"
+    },
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Cloud Creativity Ltd",
+            "email": "info@cloudcreativity.co.uk"
+        }
+    ],
+    "require": {
+        "php": "^5.6.4|^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "CloudCreativity\\Utils\\Object\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CloudCreativity\\Utils\\Object\\": "test/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "0.1.x-dev"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
+}
