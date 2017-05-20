@@ -18,9 +18,7 @@
 
 namespace CloudCreativity\Utils\Object;
 
-use InvalidArgumentException;
 use RuntimeException;
-use stdClass;
 
 /**
  * Class ObjectProxyTrait
@@ -31,77 +29,48 @@ trait ObjectProxyTrait
 {
 
     /**
-     * @var object|null
+     * @var object
      */
-    private $proxy;
+    protected $proxy;
 
     /**
-     * @param object $proxy
-     * @return $this
-     */
-    public function setProxy($proxy)
-    {
-        if (!is_object($proxy)) {
-            throw new InvalidArgumentException('Expecting an object.');
-        }
-
-        $this->proxy = $proxy;
-
-        return $this;
-    }
-
-    /**
-     * @return object
-     */
-    public function getProxy()
-    {
-        if (!is_object($this->proxy)) {
-            $this->proxy = new stdClass();
-        }
-
-        return $this->proxy;
-    }
-
-    /**
-     * @param $key
-     * @param null $default
-     * @return null
+     * @param string $key
+     * @param mixed $default
+     * @return StandardObject|mixed
      */
     public function get($key, $default = null)
     {
-        return $this->has($key) ? $this->getProxy()->{$key} : $default;
+        return Obj::get($this->proxy, $key, $default);
     }
 
     /**
-     * @param string|string[] $keys
-     * @param mixed $default
+     * @param array ...$keys
      * @return array
      */
-    public function getProperties($keys, $default = null)
+    public function getProperties(...$keys)
     {
-        $ret = [];
+        $values = [];
 
-        foreach ((array) $keys as $key) {
-            $ret[$key] = $this->get($key, $default);
+        foreach ($this->normalizeKeys($keys) as $key) {
+            $values[$key] = $this->has($key) ? $this->proxy->{$key} : null;
         }
 
-        return $ret;
+        return $values;
     }
 
     /**
      * Get properties if they exist.
      *
-     * @param string|string[] $keys
+     * @param array ...$keys
      * @return array
      */
-    public function getMany($keys)
+    public function getMany(...$keys)
     {
         $ret = [];
 
-        foreach ((array) $keys as $key) {
-
+        foreach ($this->normalizeKeys($keys) as $key) {
             if ($this->has($key)) {
-                $ret[$key] = $this->get($key);
+                $ret[$key] = $this->proxy->{$key};
             }
         }
 
@@ -115,7 +84,7 @@ trait ObjectProxyTrait
      */
     public function set($key, $value)
     {
-        $this->getProxy()->{$key} = $value;
+        $this->proxy->{$key} = $value;
 
         return $this;
     }
@@ -165,13 +134,13 @@ trait ObjectProxyTrait
     }
 
     /**
-     * @param string|string[] $keys
+     * @param array ...$keys
      * @return bool
      */
-    public function has($keys)
+    public function has(...$keys)
     {
-        foreach ((array) $keys as $key) {
-            if (!property_exists($this->getProxy(), $key)) {
+        foreach ($this->normalizeKeys($keys) as $key) {
+            if (!property_exists($this->proxy, $key)) {
                 return false;
             }
         }
@@ -180,23 +149,12 @@ trait ObjectProxyTrait
     }
 
     /**
-     * @param array $keys
-     * @return bool
-     * @deprecated use `has()`
-     */
-    public function hasAll(array $keys)
-    {
-        return $this->has($keys);
-    }
-
-    /**
-     * @param string|string[] $keys
+     * @param array ...$keys
      * @return bool
      */
-    public function hasAny($keys)
+    public function hasAny(...$keys)
     {
-        foreach ((array) $keys as $key) {
-
+        foreach ($this->normalizeKeys($keys) as $key) {
             if ($this->has($key)) {
                 return true;
             }
@@ -206,26 +164,13 @@ trait ObjectProxyTrait
     }
 
     /**
-     * @param $key
+     * @param array ...$keys
      * @return $this
      */
-    public function remove($key)
+    public function remove(...$keys)
     {
-        $proxy = $this->getProxy();
-
-        unset($proxy->{$key});
-
-        return $this;
-    }
-
-    /**
-     * @param string|string $keys
-     * @return $this
-     */
-    public function removeProperties($keys)
-    {
-        foreach ((array) $keys as $key) {
-            $this->remove($key);
+        foreach ($this->normalizeKeys($keys) as $key) {
+            unset($this->proxy->{$key});
         }
 
         return $this;
@@ -234,16 +179,15 @@ trait ObjectProxyTrait
     /**
      * Reduce this object so that it only has the supplied allowed keys.
      *
-     * @param string|string[] $keys
+     * @param array ...$keys
      * @return $this
      */
-    public function reduce($keys)
+    public function reduce(...$keys)
     {
-        $keys = (array) $keys;
+        $keys = $this->normalizeKeys($keys);
 
         foreach ($this->keys() as $key) {
-
-            if (!in_array($key, $keys)) {
+            if (!in_array($key, $keys, true)) {
                 $this->remove($key);
             }
         }
@@ -256,52 +200,54 @@ trait ObjectProxyTrait
      */
     public function keys()
     {
-        return array_keys($this->toArray());
+        return array_keys(get_object_vars($this->proxy));
     }
 
     /**
-     * If the object has the current key, convert it to the new key name.
+     * If the object has the current key, rename it to the new key name.
      *
      * @param $currentKey
      * @param $newKey
      * @return $this
      */
-    public function mapKey($currentKey, $newKey)
+    public function rename($currentKey, $newKey)
     {
         if ($this->has($currentKey)) {
-            $this->set($newKey, $this->get($currentKey))->remove($currentKey);
+            $this->set($newKey, $this->proxy->{$currentKey})->remove($currentKey);
         }
 
         return $this;
     }
 
     /**
-     * Map many current keys to new keys.
+     * Rename many current keys to new keys.
      *
-     * @param array $map
+     * @param array $mapping
      * @return $this
      */
-    public function mapKeys(array $map)
+    public function renameKeys(array $mapping)
     {
-        foreach ($map as $currentKey => $newKey) {
-            $this->mapKey($currentKey, $newKey);
+        foreach ($mapping as $currentKey => $newKey) {
+            $this->rename($currentKey, $newKey);
         }
 
         return $this;
     }
 
     /**
-     * @param string|string[] $keys
      * @param callable $transform
+     * @param array ...$keys
      * @return $this
      */
-    public function transform($keys, callable $transform)
+    public function transform(callable $transform, ...$keys)
     {
-        foreach ((array) $keys as $key) {
-
-            if ($this->has($key)) {
-                $this->set($key, call_user_func($transform, $this->get($key)));
+        foreach ($this->normalizeKeys($keys) as $key) {
+            if (!$this->has($key)) {
+                continue;
             }
+
+            $value = call_user_func($transform, $this->proxy->{$key}, $key);
+            $this->set($key, $value);
         }
 
         return $this;
@@ -313,40 +259,7 @@ trait ObjectProxyTrait
      */
     public function transformKeys(callable $transform)
     {
-        Obj::transformKeys($this->getProxy(), $transform);
-
-        return $this;
-    }
-
-    /**
-     * @param $key
-     * @param callable $converter
-     * @return $this
-     * @deprecated use `transform()`
-     */
-    public function convertValue($key, callable $converter)
-    {
-        return $this->transform($key, $converter);
-    }
-
-    /**
-     * @param array $keys
-     * @param callable $converter
-     * @return $this
-     * @deprecated use `transform()`
-     */
-    public function convertValues(array $keys, callable $converter)
-    {
-        return $this->transform($keys, $converter);
-    }
-
-    /**
-     * @param array $input
-     * @return $this
-     */
-    public function exchangeArray(array $input)
-    {
-        $this->setProperties($input);
+        Obj::transformKeys($this->proxy, $transform);
 
         return $this;
     }
@@ -356,21 +269,15 @@ trait ObjectProxyTrait
      */
     public function toArray()
     {
-        return Obj::toArray($this->getProxy());
+        return Obj::toArray($this->proxy);
     }
 
     /**
-     * @param $key
-     * @return StandardObjectInterface
+     * @param array $keys
+     * @return array
      */
-    public function asObject($key)
+    protected function normalizeKeys(array $keys)
     {
-        $value = $this->get($key);
-
-        if (!is_object($value) && !is_null($value)) {
-            throw new RuntimeException("Key '$key' is not an object or null.'");
-        }
-
-        return new StandardObject($value);
+        return ($keys && is_array($keys[0])) ? (array) $keys[0] : $keys;
     }
 }

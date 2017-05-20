@@ -30,6 +30,36 @@ class Obj
 {
 
     /**
+     * @param StandardObjectInterface|object|null $data
+     * @return StandardObjectInterface
+     */
+    public static function cast($data)
+    {
+        return ($data instanceof StandardObjectInterface) ? $data : new StandardObject($data);
+    }
+
+    /**
+     * @param object $data
+     * @param string $key
+     * @param mixed $default
+     * @return StandardObjectInterface|mixed
+     */
+    public static function get($data, $key, $default = null)
+    {
+        if ($data instanceof StandardObjectInterface) {
+            return $data->get($key, $default);
+        }
+
+        if (!property_exists($data, $key)) {
+            return $default;
+        }
+
+        $value = $data->{$key};
+
+        return is_object($value) ? static::cast($value) : $value;
+    }
+
+    /**
      * @param object|array $data
      * @return array
      */

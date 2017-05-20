@@ -32,24 +32,25 @@ interface StandardObjectInterface extends Traversable, Countable
     /**
      * @param $key
      * @param $default
-     * @return mixed
+     * @return StandardObjectInterface|mixed
      */
     public function get($key, $default = null);
 
     /**
-     * @param string|string[] $keys
-     * @param $default
-     * @return array
+     * Get properties.
+     *
+     * @param string|string[] ...$keys
+     * @return mixed
      */
-    public function getProperties($keys, $default = null);
+    public function getProperties(...$keys);
 
     /**
      * Get properties if they exist.
      *
-     * @param string|string[] $keys
+     * @param string|string[] ...$keys
      * @return array
      */
-    public function getMany($keys);
+    public function getMany(...$keys);
 
     /**
      * @param $key
@@ -84,47 +85,32 @@ interface StandardObjectInterface extends Traversable, Countable
     /**
      * Do all the key(s) exist?
      *
-     * @param string|string[] $keys
+     * @param array ...$keys
      * @return bool
      */
-    public function has($keys);
-
-    /**
-     * Whether the object has all of the specified keys.
-     *
-     * @param array $keys
-     * @return bool
-     * @deprecated use `has()`
-     */
-    public function hasAll(array $keys);
+    public function has(...$keys);
 
     /**
      * Whether the object has any (at least one) of the specified keys.
      *
-     * @param string|string[] $keys
+     * @param array ...$keys
      * @return bool
      */
-    public function hasAny($keys);
+    public function hasAny(...$keys);
 
     /**
-     * @param string $key
+     * @param array ...$key
      * @return $this
      */
-    public function remove($key);
-
-    /**
-     * @param string|string[] $keys
-     * @return $this
-     */
-    public function removeProperties($keys);
+    public function remove(...$key);
 
     /**
      * Reduce this object so that it only has the supplied allowed keys.
      *
-     * @param string|string[] $keys
+     * @param array ...$keys
      * @return $this
      */
-    public function reduce($keys);
+    public function reduce(...$keys);
 
     /**
      * Get a list of the object's keys.
@@ -134,30 +120,30 @@ interface StandardObjectInterface extends Traversable, Countable
     public function keys();
 
     /**
-     * If the object has the current key, convert it to the new key.
+     * If the object has the current key, rename it to the new key.
      *
      * @param $currentKey
      * @param $newKey
      * @return $this
      */
-    public function mapKey($currentKey, $newKey);
+    public function rename($currentKey, $newKey);
 
     /**
-     * Map multiple keys to new key names.
+     * Rename multiple keys to new key names.
      *
-     * @param array $map
+     * @param array $mapping
      * @return $this
      */
-    public function mapKeys(array $map);
+    public function renameKeys(array $mapping);
 
     /**
      * Apply the transform to the value for the supplied key(s), if it exists.
      *
-     * @param string|string[] $keys
      * @param callable $transform
+     * @param array $keys
      * @return $this
      */
-    public function transform($keys, callable $transform);
+    public function transform(callable $transform, ...$keys);
 
     /**
      * Recursively iterate through the object's keys and apply the transform to each key.
@@ -168,35 +154,10 @@ interface StandardObjectInterface extends Traversable, Countable
     public function transformKeys(callable $transform);
 
     /**
-     * @param $keys
-     * @param callable $converter
-     * @return mixed
-     * @deprecated use `transform()`
-     */
-    public function convertValue($keys, callable $converter);
-
-    /**
-     * Apply the converter to multiple keys that exist.
-     *
-     * @param array $keys
-     * @param callable $converter
-     * @return $this
-     * @deprecated use `transform()`
-     */
-    public function convertValues(array $keys, callable $converter);
-
-    /**
      * Get the object's property values as an array.
      *
      * @return array
      */
     public function toArray();
 
-    /**
-     * Get the supplied key's value as a standard object.
-     *
-     * @param $key
-     * @return StandardObjectInterface
-     */
-    public function asObject($key);
 }
