@@ -56,6 +56,22 @@ class StandardObjectTest extends TestCase
         $this->object = new StandardObject($this->proxy);
     }
 
+    public function testClone()
+    {
+        $copy = clone $this->object;
+        $copy->set('foo', 'bar');
+
+        $this->assertNull($this->object->get('foo'));
+    }
+
+    public function testCloneIsDeep()
+    {
+        $copy = clone $this->object;
+        $copy->get('attributes')->set('foo', 'bar');
+
+        $this->assertNull($this->object->get('attributes')->get('foo'));
+    }
+
     public function testMagicGet()
     {
         $this->assertSame($this->proxy->type, $this->object->type);

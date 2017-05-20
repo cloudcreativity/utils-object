@@ -43,6 +43,14 @@ class StandardObject implements IteratorAggregate, StandardObjectInterface
     }
 
     /**
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->proxy = Obj::replicate($this->proxy);
+    }
+
+    /**
      * @param $key
      * @return mixed
      */

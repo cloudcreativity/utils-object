@@ -60,6 +60,25 @@ class Obj
     }
 
     /**
+     * Clone the object recursively.
+     *
+     * @param object $data
+     * @return object
+     */
+    public static function replicate($data)
+    {
+        $copy = clone $data;
+
+        foreach ($copy as $key => $value) {
+            if (is_object($value)) {
+                $copy->{$key} = static::replicate($value);
+            }
+        }
+
+        return $copy;
+    }
+
+    /**
      * @param object|array $data
      * @return array
      */
