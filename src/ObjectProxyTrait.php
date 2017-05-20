@@ -18,8 +18,6 @@
 
 namespace CloudCreativity\Utils\Object;
 
-use RuntimeException;
-
 /**
  * Class ObjectProxyTrait
  *

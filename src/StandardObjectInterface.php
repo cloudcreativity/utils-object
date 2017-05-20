@@ -114,6 +114,13 @@ interface StandardObjectInterface extends Traversable, Countable, JsonSerializab
     public function reduce(...$keys);
 
     /**
+     * Fluent clone method.
+     *
+     * @return StandardObjectInterface
+     */
+    public function copy();
+
+    /**
      * Get a list of the object's keys.
      *
      * @return string[]

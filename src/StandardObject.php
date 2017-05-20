@@ -51,6 +51,14 @@ class StandardObject implements IteratorAggregate, StandardObjectInterface
     }
 
     /**
+     * @return StandardObject
+     */
+    public function copy()
+    {
+        return clone $this;
+    }
+
+    /**
      * @param $key
      * @return mixed
      */

@@ -23,7 +23,7 @@ use RuntimeException;
 /**
  * Class DecodeException
  *
- * @package CloudCreativity\Utils
+ * @package CloudCreativity\Utils\Object
  */
 class DecodeException extends RuntimeException
 {

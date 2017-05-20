@@ -72,6 +72,12 @@ class StandardObjectTest extends TestCase
         $this->assertNull($this->object->get('attributes')->get('foo'));
     }
 
+    public function testCopy()
+    {
+        $this->object->copy()->get('attributes')->set('foo', 'bar');
+        $this->assertNull($this->object->get('foo'));
+    }
+
     public function testMagicGet()
     {
         $this->assertSame($this->proxy->type, $this->object->type);
