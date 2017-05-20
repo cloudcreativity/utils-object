@@ -1,6 +1,6 @@
 {
     "name": "cloudcreativity/utils-object",
-    "description": "Utility class for handling standard objects.",
+    "description": "Utility classes for handling standard objects.",
     "keywords": [
         "cloudcreativity",
         "object"
@@ -34,7 +34,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "0.1.x-dev"
+            "dev-develop": "1.0.x-dev"
         }
     },
     "minimum-stability": "stable",

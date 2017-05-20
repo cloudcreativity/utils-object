@@ -313,7 +313,7 @@ trait ObjectProxyTrait
      */
     public function transformKeys(callable $transform)
     {
-        ObjectUtils::transformKeys($this->getProxy(), $transform);
+        Obj::transformKeys($this->getProxy(), $transform);
 
         return $this;
     }
@@ -356,7 +356,7 @@ trait ObjectProxyTrait
      */
     public function toArray()
     {
-        return ObjectUtils::toArray($this->getProxy());
+        return Obj::toArray($this->getProxy());
     }
 
     /**

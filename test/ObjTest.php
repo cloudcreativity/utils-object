@@ -26,7 +26,7 @@ use stdClass;
  *
  * @package CloudCreativity\Utils\Object
  */
-class ObjectUtilsTest extends TestCase
+class ObjTest extends TestCase
 {
 
     public function testToArray()
@@ -87,7 +87,7 @@ OBJ;
             ],
         ];
 
-        $actual = ObjectUtils::toArray($this->toObject($object));
+        $actual = Obj::toArray($this->toObject($object));
 
         $this->assertEquals($expected, $actual);
     }
@@ -137,7 +137,7 @@ OBJ;
 OBJ;
 
         $object = $this->toObject($object);
-        $actual = ObjectUtils::transformKeys($object, function ($key) {
+        $actual = Obj::transformKeys($object, function ($key) {
             return is_int($key) ? $key : str_replace('-', '_', $key);
         });
 

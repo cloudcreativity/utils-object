@@ -26,7 +26,7 @@ use stdClass;
  *
  * @package CloudCreativity\Utils\Object
  */
-class ObjectUtils
+class Obj
 {
 
     /**
@@ -49,7 +49,7 @@ class ObjectUtils
     }
 
     /**
-     * @param $data
+     * @param object|array $data
      * @param callable $transform
      * @return array|stdClass
      */

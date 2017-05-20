@@ -267,7 +267,7 @@ class ObjectProxyTraitTest extends TestCase
         $object->baz = new stdClass();
         $object->baz->bat = 'bazbat';
 
-        $expected = ObjectUtils::toArray($object);
+        $expected = Obj::toArray($object);
         $this->trait->setProxy($object);
         $this->assertSame($expected, $this->trait->toArray());
     }
