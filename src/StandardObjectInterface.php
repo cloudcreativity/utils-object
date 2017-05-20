@@ -19,6 +19,7 @@
 namespace CloudCreativity\Utils\Object;
 
 use Countable;
+use JsonSerializable;
 use Traversable;
 
 /**
@@ -26,7 +27,7 @@ use Traversable;
  *
  * @package CloudCreativity\Utils\Object
  */
-interface StandardObjectInterface extends Traversable, Countable
+interface StandardObjectInterface extends Traversable, Countable, JsonSerializable
 {
 
     /**

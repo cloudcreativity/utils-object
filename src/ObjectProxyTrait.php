@@ -273,6 +273,14 @@ trait ObjectProxyTrait
     }
 
     /**
+     * @return object
+     */
+    public function jsonSerialize()
+    {
+        return $this->proxy;
+    }
+
+    /**
      * @param array $keys
      * @return array
      */
