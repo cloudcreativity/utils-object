@@ -29,6 +29,40 @@ use stdClass;
 class ObjTest extends TestCase
 {
 
+    public function testCastStandardObject()
+    {
+        $obj = new StandardObject();
+        $this->assertSame($obj, Obj::cast($obj));
+    }
+
+    public function testCastObject()
+    {
+        $obj = (object) ['foo' => 'bar'];
+        $this->assertEquals(new StandardObject($obj), Obj::cast($obj));
+    }
+
+    public function testCastNull()
+    {
+        $this->assertEquals(new StandardObject(), Obj::cast(null));
+    }
+
+    public function testDecode()
+    {
+        $expected = new StandardObject((object) ['type' => 'posts', 'id' => 99]);
+        $this->assertEquals($expected, Obj::decode('{"type": "posts", "id": 99}'));
+    }
+
+    public function testDecodeFails()
+    {
+        $this->expectException(DecodeException::class);
+        Obj::decode('{"type": "posts", "id": 99');
+    }
+
+    public function testDecodeNotObject()
+    {
+        $this->assertNull(Obj::decode('["foo", "bar"]'));
+    }
+
     public function testToArray()
     {
         $object = <<<OBJ

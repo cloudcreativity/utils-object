@@ -39,6 +39,23 @@ class Obj
     }
 
     /**
+     * @param $json
+     * @param int $depth
+     * @param int $options
+     * @return StandardObject|null
+     */
+    public static function decode($json, $depth = 512, $options = 0)
+    {
+        $data = json_decode($json, false, $depth, $options);
+
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new DecodeException();
+        }
+
+        return is_object($data) ? new StandardObject($data) : null;
+    }
+
+    /**
      * @param object $data
      * @param string $key
      * @param mixed $default
