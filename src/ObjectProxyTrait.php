@@ -273,6 +273,14 @@ trait ObjectProxyTrait
     /**
      * @return object
      */
+    public function toStdClass()
+    {
+        return Obj::replicate($this->proxy);
+    }
+
+    /**
+     * @return object
+     */
     public function jsonSerialize()
     {
         return $this->proxy;

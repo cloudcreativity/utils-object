@@ -295,6 +295,14 @@ class StandardObjectTest extends TestCase
         $this->assertEquals($expected, $this->object->toArray());
     }
 
+    public function testToStdClass()
+    {
+        $this->assertEquals($this->proxy, $copy = $this->object->toStdClass());
+        $copy->foo = 'bar';
+        $copy->attributes->foo = 'bar';
+        $this->assertNotEquals($this->proxy, $copy);
+    }
+
     public function testJsonSerialize()
     {
         $this->assertJsonStringEqualsJsonString(json_encode($this->proxy), json_encode($this->object));

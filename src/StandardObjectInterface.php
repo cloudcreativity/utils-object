@@ -20,6 +20,7 @@ namespace CloudCreativity\Utils\Object;
 
 use Countable;
 use JsonSerializable;
+use stdClass;
 use Traversable;
 
 /**
@@ -167,5 +168,10 @@ interface StandardObjectInterface extends Traversable, Countable, JsonSerializab
      * @return array
      */
     public function toArray();
+
+    /**
+     * @return stdClass
+     */
+    public function toStdClass();
 
 }
