@@ -269,13 +269,25 @@ class StandardObjectTest extends TestCase
 
     public function testTransform()
     {
-        $actual = $this->object->transform(function ($value, $key) {
-            return ($key === 'id') ? 999 : strtoupper($value);
+        $actual = $this->object->transform(function ($value) {
+            return is_int($value) ? 999 : strtoupper($value);
         }, 'type', 'foo', 'id');
 
         $this->assertSame($this->object, $actual);
         $this->assertSame(999, $this->object->get('id'));
         $this->assertSame('POSTS', $this->object->get('type'));
+    }
+
+    public function testTransformIssue1()
+    {
+        $object = new StandardObject((object) [
+            'foo' => '1',
+            'bar' => '2',
+        ]);
+
+        $object->transform('intval', 'foo', 'bar');
+        $this->assertSame(1, $object->get('foo'));
+        $this->assertSame(2, $object->get('bar'));
     }
 
     public function testTransformKeys()

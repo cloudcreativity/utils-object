@@ -244,7 +244,7 @@ trait ObjectProxyTrait
                 continue;
             }
 
-            $value = call_user_func($transform, $this->proxy->{$key}, $key);
+            $value = call_user_func($transform, $this->proxy->{$key});
             $this->set($key, $value);
         }
 
