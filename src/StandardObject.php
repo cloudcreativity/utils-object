@@ -18,9 +18,9 @@
 
 namespace CloudCreativity\Utils\Object;
 
-use ArrayIterator;
 use IteratorAggregate;
 use OutOfBoundsException;
+use stdClass;
 use Traversable;
 
 /**
@@ -38,9 +38,23 @@ class StandardObject implements IteratorAggregate, StandardObjectInterface
      */
     public function __construct($proxy = null)
     {
-        if (!is_null($proxy)) {
-            $this->setProxy($proxy);
-        }
+        $this->proxy = $proxy ?: new stdClass();
+    }
+
+    /**
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->proxy = Obj::replicate($this->proxy);
+    }
+
+    /**
+     * @return StandardObject
+     */
+    public function copy()
+    {
+        return clone $this;
     }
 
     /**
@@ -53,7 +67,7 @@ class StandardObject implements IteratorAggregate, StandardObjectInterface
             throw new OutOfBoundsException(sprintf('Key "%s" does not exist.', $key));
         }
 
-        return $this->get($key);
+        return $this->proxy->{$key};
     }
 
     /**
@@ -87,11 +101,7 @@ class StandardObject implements IteratorAggregate, StandardObjectInterface
      */
     public function getIterator()
     {
-        if ($this->getProxy() instanceof Traversable) {
-            return $this->getProxy();
-        }
-
-        return new ArrayIterator($this->toArray());
+        return Obj::traverse($this->proxy);
     }
 
     /**

@@ -20,14 +20,92 @@ namespace CloudCreativity\Utils\Object;
 
 use InvalidArgumentException;
 use stdClass;
+use Traversable;
 
 /**
  * Class ObjectUtils
  *
  * @package CloudCreativity\Utils\Object
  */
-class ObjectUtils
+class Obj
 {
+
+    /**
+     * @param StandardObjectInterface|object|null $data
+     * @return StandardObjectInterface
+     */
+    public static function cast($data)
+    {
+        return ($data instanceof StandardObjectInterface) ? $data : new StandardObject($data);
+    }
+
+    /**
+     * @param $json
+     * @param int $depth
+     * @param int $options
+     * @return StandardObject|null
+     */
+    public static function decode($json, $depth = 512, $options = 0)
+    {
+        $data = json_decode($json, false, $depth, $options);
+
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new DecodeException();
+        }
+
+        return is_object($data) ? new StandardObject($data) : null;
+    }
+
+    /**
+     * @param object $data
+     * @param string $key
+     * @param mixed $default
+     * @return StandardObjectInterface|mixed
+     */
+    public static function get($data, $key, $default = null)
+    {
+        if ($data instanceof StandardObjectInterface) {
+            return $data->get($key, $default);
+        }
+
+        if (!property_exists($data, $key)) {
+            return $default;
+        }
+
+        $value = $data->{$key};
+
+        return is_object($value) ? static::cast($value) : $value;
+    }
+
+    /**
+     * Clone the object recursively.
+     *
+     * @param object $data
+     * @return object
+     */
+    public static function replicate($data)
+    {
+        $copy = clone $data;
+
+        foreach ($copy as $key => $value) {
+            if (is_object($value)) {
+                $copy->{$key} = static::replicate($value);
+            }
+        }
+
+        return $copy;
+    }
+
+    /**
+     * @param object|array $data
+     * @return Traversable
+     */
+    public static function traverse($data)
+    {
+        foreach ($data as $key => $value) {
+            yield $key => is_object($value) ? static::cast($value) : $value;
+        }
+    }
 
     /**
      * @param object|array $data
@@ -49,7 +127,7 @@ class ObjectUtils
     }
 
     /**
-     * @param $data
+     * @param object|array $data
      * @param callable $transform
      * @return array|stdClass
      */

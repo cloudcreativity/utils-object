@@ -26,8 +26,42 @@ use stdClass;
  *
  * @package CloudCreativity\Utils\Object
  */
-class ObjectUtilsTest extends TestCase
+class ObjTest extends TestCase
 {
+
+    public function testCastStandardObject()
+    {
+        $obj = new StandardObject();
+        $this->assertSame($obj, Obj::cast($obj));
+    }
+
+    public function testCastObject()
+    {
+        $obj = (object) ['foo' => 'bar'];
+        $this->assertEquals(new StandardObject($obj), Obj::cast($obj));
+    }
+
+    public function testCastNull()
+    {
+        $this->assertEquals(new StandardObject(), Obj::cast(null));
+    }
+
+    public function testDecode()
+    {
+        $expected = new StandardObject((object) ['type' => 'posts', 'id' => 99]);
+        $this->assertEquals($expected, Obj::decode('{"type": "posts", "id": 99}'));
+    }
+
+    public function testDecodeFails()
+    {
+        $this->expectException(DecodeException::class);
+        Obj::decode('{"type": "posts", "id": 99');
+    }
+
+    public function testDecodeNotObject()
+    {
+        $this->assertNull(Obj::decode('["foo", "bar"]'));
+    }
 
     public function testToArray()
     {
@@ -87,7 +121,7 @@ OBJ;
             ],
         ];
 
-        $actual = ObjectUtils::toArray($this->toObject($object));
+        $actual = Obj::toArray($this->toObject($object));
 
         $this->assertEquals($expected, $actual);
     }
@@ -137,7 +171,7 @@ OBJ;
 OBJ;
 
         $object = $this->toObject($object);
-        $actual = ObjectUtils::transformKeys($object, function ($key) {
+        $actual = Obj::transformKeys($object, function ($key) {
             return is_int($key) ? $key : str_replace('-', '_', $key);
         });
 
